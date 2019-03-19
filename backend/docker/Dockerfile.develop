@@ -1,0 +1,15 @@
+FROM node:alpine
+
+WORKDIR /home/cpf-cnpj-management/app
+
+ENV NODE_ENV prod
+
+COPY package*.json ./
+RUN npm install
+
+COPY . .
+
+EXPOSE 3000
+
+CMD ["node", "src/index.js"]
+

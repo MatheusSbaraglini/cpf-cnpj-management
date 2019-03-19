@@ -1,0 +1,26 @@
+{
+  "name": "cpf-cnpj-management-backend",
+  "version": "1.0.0",
+  "description": "This is an API to manage cpf and cnpj registration.",
+  "main": "index.js",
+  "scripts": {
+    "test": "docker-compose -f docker/docker-compose.test.yml up --build",
+    "build": "docker-compose -f docker/docker-compose.develop.yml build",
+    "start": "docker-compose -f docker/docker-compose.develop.yml up",
+    "production": "docker-compose -f docker/docker-compose.develop.yml up -d"
+  },
+  "author": "Matheus Sbaraglini",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "express": "^4.16.4",
+    "mongoose": "^5.4.19",
+    "mongoose-extend-schema": "^1.0.0"
+  },
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "chai-http": "^4.2.1",
+    "mocha": "^6.0.2",
+    "nodemon": "^1.18.10"
+  }
+}
