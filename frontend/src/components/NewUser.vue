@@ -81,16 +81,21 @@ export default {
     },
     methods: {
         hideModal(){
+            this.cpfCnpj = '';
+            this.userData.name = '';
+            this.userData.cpf = '';
+            this.userData.cnpj = '';
+
             this.$refs.newUser.hide();
         },
         onCreateNewUser() {
-            this.userData.cpf = '';
-            this.userData.cnpj = '';
+            this.userData.cpf = undefined;
+            this.userData.cnpj = undefined;
 
             if (!this.userData.name.length > 0) {
                 alert('Enter at least 1 letter.');
                 return;
-            };
+            }
 
             if (this.cpfCnpj.length !== 11 && this.cpfCnpj.length !== 14) {
                 alert('Must be 11 characters long for cpf or 14 characters long for cnpj.');
@@ -101,10 +106,6 @@ export default {
 
             this.$emit('createNewUser', this.userData);
 
-            this.cpfCnpj = '';
-            this.userData.name = '';
-            this.userData.cpf = '';
-            this.userData.cnpj = '';
             this.hideModal();
         }
     },

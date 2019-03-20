@@ -65,10 +65,23 @@ export default {
     },
     methods: {
         onCreateNewUser(userData){
-            console.log('name: ' + userData.name);
-            // axios.post('http://localhost:3000/api/v1/users', userData)
-            //     .then(this.users.push(userData))
-            //     .catch(err => { throw new Error(err) });
+            axios({
+                method: 'post',
+                url: 'http://localhost:3000/api/v1/users',
+                data: {
+                    name: userData.name,
+                    cpf: userData.cpf,
+                    cnpj: userData.cnpj
+                },
+                headers: { 'Content-Type': 'application/json'}
+            })
+                .then(function(response) {
+                    console.log('response.data: ' + response.data.user);
+                    this.users.push(response.data.user)
+                })
+                .catch(function(error){
+                    console.log(error.response.data.error);
+                })
         },
 
         isDeactive(item) {
