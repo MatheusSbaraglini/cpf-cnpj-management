@@ -63,9 +63,9 @@ module.exports.new = async function (req, res) {
     } catch (err) {
         console.log('error posting user: ' + err);
         if (err instanceof InvalidCpfError || err instanceof InvalidCnpjError || err instanceof  DomainError) {
-            return res.status(400).send({ error: err.message });
+            return res.status(400).json({ error: err.message });
         } else {
-            return res.status(400).send({ error: 'error creating a new user!' });
+            return res.status(400).json({ error: 'error creating a new user!' });
         };
     };
 };
