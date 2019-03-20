@@ -90,7 +90,10 @@ module.exports.update = async function (req, res) {
         user.cpf = cpf ? cpf : user.cpf;
         user.cnpj = cnpj ? cnpj : user.cnpj;
         user.userType = userType ? userType  : user.userType;
-        user.active = active ? active  : user.active;
+
+        if (typeof active !== 'undefined' && active !== null) {
+            user.active = active
+        };
 
         await user.save();
 
