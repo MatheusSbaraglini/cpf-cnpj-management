@@ -1,29 +1,9 @@
 const { InvalidCpfError, InvalidCnpjError, DomainError } = require('../errors');
 
-function digitosIguais(valor) {
-	let isDigitosIguais = true;
-
-	for(i = 0; i <= valor.length - 1; i++) {
-		if (i === valor.length - 1)
-			break;
-
-		if (valor.charAt(i) != valor.charAt(i + 1)) {
-			isDigitosIguais = false;
-			break;
-		}
-	}
-
-	return isDigitosIguais;
-};
-
 function validateCpf (cpf) {
 	cpf = cpf.replace(/\D/g, '');
 
-	if (cpf === '' || cpf.length !== 11) {
-		return false;
-	}
-
-	if (digitosIguais(cpf)) {
+	if (cpf === '' || cpf.length !== 11 || !/^\d{11}$/.test(cpf)) {
 		return false;
 	}
 
@@ -51,27 +31,23 @@ function validateCpf (cpf) {
 };
 
 function validateCnpj(cnpj) {
-	var b = [6,5,4,3,2,9,8,7,6,5,4,3,2];
+  var b = [6,5,4,3,2,9,8,7,6,5,4,3,2];
 
-	cnpj = cnpj.replace(/[^\d]/g,"");
+  if((cnpj = cnpj.replace(/[^\d]/g,"")).length != 14)
+      return false;
 
-	if (cnpj === '' || cnpj.length != 14) {
-		return false;
-	}
+  if(/0{14}/.test(cnpj))
+      return false;
 
-	if (digitosIguais(cnpj)) {
-		return false;
-	}
+  for (var i = 0, n = 0; i < 12; n += cnpj[i] * b[++i]);
+  if(cnpj[12] != (((n %= 11) < 2) ? 0 : 11 - n))
+      return false;
 
-	for (var i = 0, n = 0; i < 12; n += cnpj[i] * b[++i]);
-	if(cnpj[12] != (((n %= 11) < 2) ? 0 : 11 - n))
-		return false;
+  for (var i = 0, n = 0; i <= 12; n += cnpj[i] * b[i++]);
+  if(cnpj[13] != (((n %= 11) < 2) ? 0 : 11 - n))
+      return false;
 
-	for (var i = 0, n = 0; i <= 12; n += cnpj[i] * b[i++]);
-	if(cnpj[13] != (((n %= 11) < 2) ? 0 : 11 - n))
-		return false;
-
-	return true;
+  return true;
 };
 
 function validateCpfCnpj(cpf, cnpj) {
