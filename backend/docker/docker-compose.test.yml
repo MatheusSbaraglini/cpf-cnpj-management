@@ -2,20 +2,19 @@
 version: "3"
 
 services:
-  app:
+  app-test:
     build:
       context: ../
       dockerfile: docker/Dockerfile.test
     ports:
       - "3000:3000"
     environment:
-      - MONGO_URL=mongodb://database:27017
+      - MONGO_URL=mongodb://database-test:27017
     depends_on:
-      - database
+      - database-test
   
-  database:
+  database-test:
     image: mongo:4.1.6
-    container_name: "database"
     restart: always
     ports:
       - 27017:27017

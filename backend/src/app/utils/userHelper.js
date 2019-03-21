@@ -1,4 +1,6 @@
-function validarCpf (cpf) {
+const { InvalidCpfError, InvalidCnpjError, DomainError } = require('../errors');
+
+function validateCpf (cpf) {
 	cpf = cpf.replace(/\D/g, '');
 
 	if (cpf === '' || cpf.length !== 11 || !/^\d{11}$/.test(cpf)) {
@@ -28,7 +30,7 @@ function validarCpf (cpf) {
 	return true;
 };
 
-function validarCnpj(cnpj) {
+function validateCnpj(cnpj) {
   var b = [6,5,4,3,2,9,8,7,6,5,4,3,2];
 
   if((cnpj = cnpj.replace(/[^\d]/g,"")).length != 14)
@@ -48,4 +50,18 @@ function validarCnpj(cnpj) {
   return true;
 };
 
-module.exports = { validarCpf, validarCnpj };
+function validateCpfCnpj(cpf, cnpj) {
+	if (cpf) {
+		if (!validateCpf(cpf))
+			throw new InvalidCpfError('CPF is invalid!');
+	} else if (cnpj) {
+		if (!validateCnpj(cnpj))
+			throw new InvalidCnpjError('CNPJ is invalid!');
+	} else {
+		throw new DomainError('CPF or CNPJ is required!');
+	};
+
+	return true;
+}
+
+module.exports = { validateCpfCnpj };

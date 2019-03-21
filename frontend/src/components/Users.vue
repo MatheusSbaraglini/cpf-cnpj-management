@@ -1,10 +1,25 @@
 <template>
-    <div class="User">
-        <NewUser class="create-div" @createNewUser="onCreateNewUser"/>
+    <div class="User" v-if="show">
+        <div class="create-div">
+            <b-button variant="primary" @click="onShowCreateUpdateUser">Criar novo usuário</b-button>
+
+            <div v-if="isCreateUpdateUser">
+                <CreateUpdateUser
+                    class="create-div"
+                    @createNewUser="onCreateNewUser"
+                    @userIsEdited="onUserIsEdited"
+                    @closeCreateUpdateUser="onCloseCreateUpdateUser"
+                    ref="createUserElement"
+                    v-bind:visible="isCreateUpdateUser" :userEditData="userEditData" :createUpdateUserTitle="createUpdateUserTitle"
+                />  
+            </div>
+        </div>
 
         <p></p>
 
-        <b-table striped hover
+        <b-table
+            striped
+            hover
             :sort-by.sync="sortBy"
             :sort-desc.sync="sortDesc"
             :items="users"
@@ -19,69 +34,89 @@
             </template>
 
             <template slot="active" slot-scope="row">
-                {{ row.value ? 'yes' : 'no' }}
+                {{ row.value ? 'sim' : 'não' }}
             </template>
 
             <template slot="actions" slot-scope="row">
                 <div style="text-align: center"> 
-                    <b-button size="sm" @click="deleteUser(row.item._id)" class="button" variant="info"> Edit </b-button>
+                    <b-button size="sm" @click="onEditUserClick(row.item)" class="button" variant="info"> Editar </b-button>
                     <div class="divider" />
-                    <b-button size="sm" @click="deleteUser(row.item._id)" class="button" variant="danger"> Delete </b-button>
+                    <b-button size="sm" @click="onDeleteUserClick(row.item._id)" class="button" variant="danger"> Deletar </b-button>
+                    <div class="divider" />
+                    <b-button size="sm" @click="onModifyActiveClick(row.item)" class="button" variant="danger">
+                        {{ row.item.active ? 'Desativar' : 'Ativar' }}
+                    </b-button>
                 </div>
             </template>
         </b-table>
-
-        <div>
-            Sorting By: <b>{{ sortBy }}</b>, Sort Direction:
-            <b>{{ sortDesc ? 'Descending' : 'Ascending' }}</b>
-        </div>
-        <!-- {{ users }} -->
-        info: {{info}}
     </div>
 </template>
 
 
 <script>
 import axios from 'axios';
-import NewUser from './NewUser';
+import CreateUpdateUser from './CreateUpdateUser';
 
 export default {
     name: "Users",
-    components: { NewUser },
+    components: { CreateUpdateUser },
     data() {
         return {
-            info: '',
+            show: true,
+            isCreateUpdateUser: false,
+            createUpdateUserTitle: 'Criar novo usuário.',
             sortBy: 'name',
             sortDesc: false,
             fields: [
-                {key: 'name', sortable: true},
-                {key: 'cpf', sortable: true},
-                {key: 'cnpj', sortable: true},
-                {key: 'active'},
-                {key: 'actions', sortable: false}
+                {key: 'name', sortable: true, label: 'Nome'},
+                {key: 'cpf', sortable: true, label: 'CPF'},
+                {key: 'cnpj', sortable: true, label: 'CNPJ'},
+                {key: 'active', label: 'Ativo'},
+                {key: 'actions', sortable: false, label: 'Ações'}
             ],
-            users: []
+            users: [],
+            userEditData: {
+                _id: '',
+                name: '',
+                cpf: '',
+                cnpj: ''
+            }
         }
     },
     methods: {
-        onCreateNewUser(userData){
-            axios({
-                method: 'post',
-                url: 'http://localhost:3000/api/v1/users',
-                data: {
-                    name: userData.name,
-                    cpf: userData.cpf,
-                    cnpj: userData.cnpj
-                },
-                headers: { 'Content-Type': 'application/json'}
-            })
-                .then(function(response) {
-                    console.log('response.data: ' + response.data.user);
-                    this.users.push(response.data.user)
-                })
-                .catch(function(error){
-                    console.log(error.response.data.error);
-                })
+        onCloseCreateUpdateUser() {
+            this.isCreateUpdateUser = false;
+            this.createUpdateUserTitle = 'Criar novo usuário.';
+        },
+
+        onShowCreateUpdateUser() {
+            this.isCreateUpdateUser = true;
+        },
+
+
+        onCreateNewUser(userData) {
+            this.users.push(userData);
+            // TO-DO: notificar usuário da criação bem sucedida
+        },
+
+        onUserIsEdited() {
+            axios.get('http://localhost:3000/api/v1/users')
+                .then(res => { this.users = res.data.users })
+                .catch(err => { throw new Error(err) });
+            
+            // TO-DO: notificar usuário da edição bem sucedida
+        },
+
+        onEditUserClick(userData) {
+            const {_id, name, cpf, cnpj } = userData;
+
+            this.userEditData._id = _id;
+            this.userEditData.name = name;
+            this.userEditData.cpf = cpf;
+            this.userEditData.cnpj = cnpj;
+
+            this.createUpdateUserTitle = 'Alterar usuário.'
+            this.isCreateUpdateUser = true;
         },
 
         isDeactive(item) {
@@ -90,10 +125,28 @@ export default {
             return item
         },
 
-        deleteUser(userId){
+        onDeleteUserClick(userId) {
             axios.delete(`http://localhost:3000/api/v1/users/${userId}`)
                 .then(this.users = this.users.filter(user => user._id !== userId))
                 .catch(err => { throw new Error(err) })
+        },
+
+        onModifyActiveClick(userData) {
+            axios({
+                method: 'patch',
+                url: `http://localhost:3000/api/v1/users/${userData._id}`,
+                data: {
+                    active: !userData.active
+                },
+                headers: { 'Content-Type': 'application/json' }
+            })
+                .then(function(response) {
+                    console.log('active alter to: ' + response.data.user.active)
+                    userData.active = response.data.user.active;
+                })
+                .catch(function(error){
+                    console.log('erro altering active: ' + error.response.data.error)
+                })
         },
 
         applyCpfMask(value) {
