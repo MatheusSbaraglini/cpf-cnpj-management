@@ -1,27 +1,6 @@
 <template>
     <div class="User" v-if="show">
-        <div class="alert-div">
-            <b-alert
-                variant="success"
-                fade
-                dismissible
-                :show="dismissSuccessCountDown"
-                @dismiss-count-down="countDownSuccessChange"
-                @dismissed="dismissSuccessCountDown=0"
-            >
-                <strong> {{ alertMessage }} </strong>
-            </b-alert>
-
-            <b-alert
-                variant="danger"
-                fade
-                :show="dismissErrorCountDown"
-                @dismiss-count-down="countDownErrorChange"
-                @dismissed="dismissErrorCountDown=0"
-            >
-                <strong> {{ alertMessage }} </strong>
-            </b-alert>
-        </div>
+        <notifications position="top center" width="350" />
 
         <div class="search-div">
             <b-form-group
@@ -100,6 +79,7 @@
 <script>
 import axios from 'axios';
 import CreateUpdateUser from './CreateUpdateUser';
+// import './app.scss';
 
 export default {
     name: "Users",
@@ -112,9 +92,6 @@ export default {
             sortBy: 'name',
             sortDesc: false,
             filter: '',
-            alertMessage: '',
-            dismissSuccessCountDown: 0,
-            dismissErrorCountDown: 0,
             fields: [
                 {key: 'name', sortable: true, label: 'Nome'},
                 {key: 'cpf', sortable: true, label: 'CPF'},
@@ -208,21 +185,19 @@ export default {
         },
 
         showSuccessAlert(message) {
-            this.alertMessage = message;
-            this.dismissSuccessCountDown = 2;
+            this.$notify({
+                text: `<h5> ${message} </h5>`,
+                type: 'success',
+                duration: 2000
+            });
         },
 
         showErrorAlert(message) {
-            this.alertMessage = message;
-            this.dismissErrorCountDown = 2;
-        },
-
-        countDownSuccessChange(dismissCountDown) {
-            this.dismissSuccessCountDown = dismissCountDown
-        },
-
-        countDownErrorChange(dismissCountDown) {
-            this.dismissErrorCountDown = dismissCountDown;
+            this.$notify({
+                text: `<h5> ${message} </h5>`,
+                type: 'error',
+                duration: 2000
+            });
         },
 
         applyCpfMask(value) {
@@ -244,7 +219,7 @@ export default {
 </script>
 
 
-<style scoped>
+<style>
     .divider {
         width:5px;
         height:auto;
@@ -266,11 +241,6 @@ export default {
     .parent-div {
         float: right;
         clear: none; 
-    }
-
-    .alert-div {
-        width: 40%;
-        margin: auto;
     }
 
 </style>
