@@ -16,8 +16,16 @@ function sameNumbers(valor) {
 	return isSameNumbers;
 };
 
+function removeCpfMask(cpf) {
+	return cpf.replace(/\D/g, '');
+};
+
+function removeCnpjMask(cnpj) {
+	return cnpj.replace(/[^\d]/g,"");
+}
+
 function validateCpf (cpf) {
-	cpf = cpf.replace(/\D/g, '');
+	cpf = removeCpfMask(cpf);
 
 	if (cpf === '' || cpf.length !== 11) {
 		return false;
@@ -53,7 +61,7 @@ function validateCpf (cpf) {
 function validateCnpj(cnpj) {
 	var b = [6,5,4,3,2,9,8,7,6,5,4,3,2];
 
-	cnpj = cnpj.replace(/[^\d]/g,"");
+	cnpj = removeCnpjMask(cnpj);
 
 	if (cnpj === '' || cnpj.length != 14) {
 		return false;
@@ -88,4 +96,4 @@ function validateCpfCnpj(cpf, cnpj) {
 	return true;
 }
 
-module.exports = { validateCpfCnpj };
+module.exports = { validateCpfCnpj, removeCpfMask, removeCnpjMask };

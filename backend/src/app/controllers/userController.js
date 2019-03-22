@@ -1,6 +1,6 @@
 const User = require('../models/userModel');
 const { InvalidCpfError, InvalidCnpjError, DomainError } = require('../errors');
-const validateCpfCnpj = require('../utils/userHelper').validateCpfCnpj;
+const { validateCpfCnpj, removeCpfMask, removeCnpjMask } = require('../utils/userHelper');
 
 module.exports.all = async function (req, res) {
     try {
@@ -34,8 +34,18 @@ module.exports.view = async function (req, res) {
 
 module.exports.new = async function (req, res) {
     try {
-        const { name, cpf, cnpj, active } = req.body;
+        let { name, cpf, cnpj, active } = req.body;
 
+        // if cpf and cnpj is in body, only cpf remains
+        cpf ? cnpj = undefined : cpf = undefined;
+        if (cpf) {
+            cpf = removeCpfMask(cpf);
+            cnpj = undefined;
+        } else if (cnpj) {
+            cnpj = removeCnpjMask(cnpj);
+            cpf = undefined;
+        };
+        
         validateCpfCnpj(cpf, cnpj);
 
         const user = await User.findOne({cpf, cnpj});
@@ -71,11 +81,12 @@ module.exports.update = async function (req, res) {
 
         user.name = name ? name : user.name;
 
+        // if cpf and cnpj is in body, only cpf remains
         if (cpf) {
-            user.cpf = cpf;
+            user.cpf = removeCpfMask(cpf);
             user.cnpj = undefined;
         } else if (cnpj) {
-            user.cnpj = cnpj;
+            user.cnpj = removeCnpjMask(cnpj);
             user.cpf = undefined;
         };
 

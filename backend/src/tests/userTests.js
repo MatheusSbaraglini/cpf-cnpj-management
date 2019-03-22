@@ -13,10 +13,21 @@ var newInvalidUserWithNoCpfCnpj = {
     name: 'Matheus'
 };
 
+var newValidUserWithCpfAndCnpj = {
+    name: 'Matheus Sbaraglini',
+    cpf: '54747862048',
+    cnpj: '91943854000167'
+};
+
 // cpf users data
 var newValidCpfUser = {
     name: 'Matheus Sbaraglini',
     cpf: '12517907048'
+};
+
+var newValidFormattedCpfUser = {
+    name: 'Matheus Sbaraglini',
+    cpf: '763.311.970-52'
 };
 
 var newInvalidCpfUser = {
@@ -34,6 +45,11 @@ var newInvalidSameCpfUser = {
 var newValidCnpjUser = {
     name: 'Matheus ltda.',
     cnpj: '07522880000105'
+};
+
+var newValidFormattedCnpjUser = {
+    name: 'Matheus ltda.',
+    cnpj: '73.425.652/0001-41'
 };
 
 var newInvalidCnpjUser = {
@@ -79,6 +95,49 @@ describe('API cpf-cnpj-management tests', function() {
                     res.body.should.have.property('user');
                     res.body.user.should.have.property('name').equal('Matheus ltda.');
                     res.body.user.should.have.property('cnpj').equal('07522880000105');
+                    done();
+                });
+        });
+
+        it('it should POST a new unformatted cpf user even if its formatted', (done) => {
+            chai.request(server)
+                .post('/api/v1/users')
+                .send(newValidFormattedCpfUser)
+                .set('Content-Type', 'application/json')
+                .end((err, res) => {
+                    res.should.have.status(201);
+                    res.body.should.have.property('user');
+                    res.body.user.should.have.property('name').equal('Matheus Sbaraglini');
+                    res.body.user.should.have.property('cpf').equal('76331197052');
+                    done();
+                });
+        });
+
+        it('it should POST a new unformatted cnpj user even if its formatted', (done) => {
+            chai.request(server)
+                .post('/api/v1/users')
+                .send(newValidFormattedCnpjUser)
+                .set('Content-Type', 'application/json')
+                .end((err, res) => {
+                    res.should.have.status(201);
+                    res.body.should.have.property('user');
+                    res.body.user.should.have.property('name').equal('Matheus ltda.');
+                    res.body.user.should.have.property('cnpj').equal('73425652000141');
+                    done();
+                });
+        });
+
+        it('it shoud POST a new user but when body contains cpf and cnpj, only cpf is registred', (done) => {
+            chai.request(server)
+                .post('/api/v1/users')
+                .send(newValidUserWithCpfAndCnpj)
+                .set('Content-Type', 'application/json')
+                .end((err, res) => {
+                    res.should.have.status(201);
+                    res.body.should.have.property('user');
+                    res.body.user.should.have.property('name').equal('Matheus Sbaraglini');
+                    res.body.user.should.have.property('cpf').equal('54747862048');
+                    res.body.user.should.not.have.property('cnpj');
                     done();
                 });
         });
@@ -246,6 +305,86 @@ describe('API cpf-cnpj-management tests', function() {
             });
         });
 
+        it('it should UPDATE a cpf user but when body contains cpf and cnpj, only cpf is registred', (done) => {
+            let newUser = new User(newValidCpfUser);
+
+            newUser.save((err, user) => {
+                chai.request(server)
+                    .put('/api/v1/users/' + user.id)
+                    .send(newValidUserWithCpfAndCnpj)
+                    .set('Content-Type', 'application/json')
+                    .end((err, res) => {
+                        res.should.have.status(200)
+                        res.body.should.have.property('user');
+                        res.body.user.should.have.property('_id').equal(user.id);
+                        res.body.user.should.have.property('name').equal('Matheus Sbaraglini');
+                        res.body.user.should.have.property('cpf').equal('54747862048');
+                        res.body.user.should.not.have.property('cnpj');
+                        done();
+                    });
+            });
+        });
+
+        it('it should UPDATE a cnpj user but when body contains cpf and cnpj, only cpf is registred', (done) => {
+            let newUser = new User(newValidCnpjUser);
+
+            newUser.save((err, user) => {
+                chai.request(server)
+                    .put('/api/v1/users/' + user.id)
+                    .send(newValidUserWithCpfAndCnpj)
+                    .set('Content-Type', 'application/json')
+                    .end((err, res) => {
+                        res.should.have.status(200)
+                        res.body.should.have.property('user');
+                        res.body.user.should.have.property('_id').equal(user.id);
+                        res.body.user.should.have.property('name').equal('Matheus Sbaraglini');
+                        res.body.user.should.have.property('cpf').equal('54747862048');
+                        res.body.user.should.not.have.property('cnpj');
+                        done();
+                    });
+            });
+        });
+
+        it('it should UPDATE a cnpj user changing to cpf user', (done) => {
+            let newUser = new User(newValidCnpjUser);
+
+            newUser.save((err, user) => {
+                chai.request(server)
+                    .put('/api/v1/users/' + user.id)
+                    .send(newValidCpfUser)
+                    .set('Content-Type', 'application/json')
+                    .end((err, res) => {
+                        res.should.have.status(200)
+                        res.body.should.have.property('user');
+                        res.body.user.should.have.property('_id').equal(user.id);
+                        res.body.user.should.have.property('name').equal('Matheus Sbaraglini');
+                        res.body.user.should.have.property('cpf').equal('12517907048');
+                        res.body.user.should.not.have.property('cnpj');
+                        done();
+                    });
+            });
+        });
+
+        it('it should UPDATE a cpf user changing to cnpj user', (done) => {
+            let newUser = new User(newValidCpfUser);
+
+            newUser.save((err, user) => {
+                chai.request(server)
+                    .put('/api/v1/users/' + user.id)
+                    .send(newValidCnpjUser)
+                    .set('Content-Type', 'application/json')
+                    .end((err, res) => {
+                        res.should.have.status(200)
+                        res.body.should.have.property('user');
+                        res.body.user.should.have.property('_id').equal(user.id);
+                        res.body.user.should.have.property('name').equal('Matheus ltda.');
+                        res.body.user.should.have.property('cnpj').equal('07522880000105');
+                        res.body.user.should.not.have.property('cpf');
+                        done();
+                    });
+            });
+        });
+
         it('it should fail the UPDATE because cpf is invalid', (done) => {
             let newUser = new User(newValidCpfUser);
 
@@ -327,7 +466,7 @@ describe('API cpf-cnpj-management tests', function() {
                         res.should.have.status(200)
                         res.body.should.have.property('user');
                         res.body.user.should.have.property('_id').equal(user.id);
-                        res.body.user.should.have.property('active').equal(false);
+                        res.body.user.active.should.be.false;
                         done();
                     });
             });
@@ -347,7 +486,7 @@ describe('API cpf-cnpj-management tests', function() {
                         res.should.have.status(200)
                         res.body.should.have.property('user');
                         res.body.user.should.have.property('_id').equal(user.id);
-                        res.body.user.should.have.property('active').equal(false);
+                        res.body.user.active.should.be.false;
                         done();
                     });
             });
