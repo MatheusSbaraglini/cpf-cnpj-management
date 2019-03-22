@@ -63,6 +63,8 @@ Na aplicaÃ§Ã£o cliente, possuÃ­mos os seguintes paths:
 
 # Detalhes dos endpoints
 
+- Quando estiver efetuando uma operação que o CPF ou CNPJ pode ser enviado pelo body, é possível informá-los com ou sem máscara de formatação, pois eles serão gravados sempre SEM a máscara.
+
 ## GET `/api/v1/users` - lista todos usuÃ¡rios.
 ### Exemplo do response:
         {
