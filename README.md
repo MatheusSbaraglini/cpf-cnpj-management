@@ -12,9 +12,9 @@ git clone https://github.com/MatheusSbaraglini/cpf-cnpj-management.git
 ```
 
 Para executá-lo é necessário possuir o nodejs, o docker e o docker-compose instalados, caso não os tenha, é possível encontrá-los em:
-https://nodejs.org/en/download/ - Nodejs
-https://www.docker.com/products/docker-desktop - Docker
-https://docs.docker.com/compose/install/#install-compose - Compose
+    - https://nodejs.org/en/download/ - Nodejs
+    - https://www.docker.com/products/docker-desktop - Docker
+    - https://docs.docker.com/compose/install/#install-compose - Compose
 
 Depois de possuir todos esses itens instalados e o repositório baixado para a máquina, será criado uma pasta com o nome do projeto, acesse ela:
 ```sh
@@ -57,8 +57,8 @@ npm run start
 Com isso é possível acessar a aplicação cliente através da porta :8080.
 
 Na aplicação cliente, possuímos os seguintes paths:
-`'/', '/home': listagem dos usuários.`
-`'/status': informações da aplicação.`
+    - `'/', '/home': listagem dos usuários.`
+    - `'/status': informações da aplicação.`
 
 
 # Detalhes dos endpoints
