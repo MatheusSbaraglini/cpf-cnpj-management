@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
-    <Users />
+    <router-view/>
   </div>
 </template>
 
@@ -9,15 +9,9 @@
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap-vue/dist/bootstrap-vue.css';
 
-import Users from './components/Users.vue';
-
 export default {
-  name: 'app',
-  components: {
-    Users
-  }
+  name: 'app'
 };
-
 </script>
 
 <style>

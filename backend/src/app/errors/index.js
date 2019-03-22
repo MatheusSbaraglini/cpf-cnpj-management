@@ -7,7 +7,7 @@ class InvalidCpfError extends Error {
       this.name = this.constructor.name;
 
       this.message = message || 
-          'CPF is invalid!';
+          'CPF inválido.';
 
       this.status = status || 400;
   }
@@ -22,7 +22,7 @@ class InvalidCnpjError extends Error {
       this.name = this.constructor.name;
 
       this.message = message || 
-          'CNPJ is invalid!';
+          'CNPJ invalido.';
 
       this.status = status || 400;
   }
@@ -37,7 +37,7 @@ class DomainError extends Error {
       this.name = this.constructor.name;
 
       this.message = message || 
-          'CNPJ is invalid!';
+          'Falha desconhecida.';
 
       this.status = status || 400;
   }

@@ -13,12 +13,12 @@ module.exports.index = async function (req, res) {
         const users = await User.find();
 
         return res.send({ 
-            message: "Success",
+            message: "Sucesso.",
             users
         })
     } catch (err) {
-        console.error(err);
-        res.status(400).json({ error: 'error loading users.' });
+        // console.error(err);
+        res.status(400).json({ error: 'Falha ao carregar usuários.' });
     }
 };
 
@@ -29,12 +29,12 @@ module.exports.view = async function (req, res) {
         const user = await User.findById(userId);
 
         return res.send({ 
-            message: "Success",
+            message: "Sucesso.",
             user
         });
     } catch (err) {
-        console.error(err);
-        return res.send(400).send({ error: 'error loading user!' + err })
+        // console.error(err);
+        return res.send(400).send({ error: 'Falha ao carregar usuário.' + err })
     }
 };
 
@@ -47,22 +47,22 @@ module.exports.new = async function (req, res) {
         const user = await User.findOne({cpf, cnpj});
 
         if (user)
-            throw new DomainError('CPF/CNPJ already exists!');
+            throw new DomainError('CPF/CNPJ já existe.');
 
         const newUser = new User({ name, cpf, cnpj, active});
 
         await newUser.save();
 
         return res.status(201).send({ 
-            message: "New user created",
+            message: "Usuário criado com sucesso.",
             user: newUser
         });
     } catch (err) {
-        console.log('error posting user: ' + err);
+        // console.log('error posting user: ' + err);
         if (err instanceof InvalidCpfError || err instanceof InvalidCnpjError || err instanceof  DomainError) {
             return res.status(400).json({ error: err.message });
         } else {
-            return res.status(400).json({ error: 'error creating a new user!' });
+            return res.status(400).json({ error: 'Falha ao criar novo usuário.' });
         };
     };
 };
@@ -87,9 +87,6 @@ module.exports.update = async function (req, res) {
 
         validateCpfCnpj(user.cpf, user.cnpj);
 
-        // user.cpf = cpf ? cpf : user.cpf;
-        // user.cnpj = cnpj ? cnpj : user.cnpj;
-
         if (typeof active !== 'undefined' && active !== null) {
             user.active = active
         };
@@ -97,15 +94,15 @@ module.exports.update = async function (req, res) {
         await user.save();
 
         return res.send({ 
-            message: "User updated",
+            message: "Usuário alterado com sucesso.",
             user 
         });
     } catch (err) {
-        console.log(err);
+        // console.log(err);
         if (err instanceof InvalidCpfError || err instanceof InvalidCnpjError || err instanceof  DomainError) {
             return res.status(400).send({ error: err.message });
         } else {
-            return res.status(400).send({ error: 'error updating a new user!' });
+            return res.status(400).send({ error: 'Falha ao alterar usuário!' });
         };
     }
 };
@@ -116,9 +113,9 @@ module.exports.delete = async function (req, res) {
 
         await User.deleteOne({ _id: userId });
 
-        return res.status(200).send({ message: "User deleted" });
+        return res.status(200).send({ message: "Usuário removido com sucesso." });
     } catch (err) {
-        console.log(err);
-        return res.status(400).send({ error: 'error removing a user!' });    
+        // console.log(err);
+        return res.status(400).send({ error: 'Falha ao remover usuário.' });    
     }
 };

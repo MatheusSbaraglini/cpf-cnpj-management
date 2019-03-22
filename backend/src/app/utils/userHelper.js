@@ -1,19 +1,19 @@
 const { InvalidCpfError, InvalidCnpjError, DomainError } = require('../errors');
 
-function digitosIguais(valor) {
-	let isDigitosIguais = true;
+function sameNumbers(valor) {
+	let isSameNumbers = true;
 
 	for(i = 0; i <= valor.length - 1; i++) {
 		if (i === valor.length - 1)
 			break;
 
 		if (valor.charAt(i) != valor.charAt(i + 1)) {
-			isDigitosIguais = false;
+			isSameNumbers = false;
 			break;
 		}
 	}
 
-	return isDigitosIguais;
+	return isSameNumbers;
 };
 
 function validateCpf (cpf) {
@@ -23,7 +23,7 @@ function validateCpf (cpf) {
 		return false;
 	}
 
-	if (digitosIguais(cpf)) {
+	if (sameNumbers(cpf)) {
 		return false;
 	}
 
@@ -59,7 +59,7 @@ function validateCnpj(cnpj) {
 		return false;
 	}
 
-	if (digitosIguais(cnpj)) {
+	if (sameNumbers(cnpj)) {
 		return false;
 	}
 
@@ -77,12 +77,12 @@ function validateCnpj(cnpj) {
 function validateCpfCnpj(cpf, cnpj) {
 	if (cpf) {
 		if (!validateCpf(cpf))
-			throw new InvalidCpfError('CPF is invalid!');
+			throw new InvalidCpfError('CPF inválido.');
 	} else if (cnpj) {
 		if (!validateCnpj(cnpj))
-			throw new InvalidCnpjError('CNPJ is invalid!');
+			throw new InvalidCnpjError('CNPJ inválido.');
 	} else {
-		throw new DomainError('CPF or CNPJ is required!');
+		throw new DomainError('É necessário informar um CPF ou CNPJ');
 	};
 
 	return true;

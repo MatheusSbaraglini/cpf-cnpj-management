@@ -71,7 +71,7 @@ describe('API cpf-cnpj-management tests', function() {
                 .set('Content-Type', 'application/json')
                 .end((err, res) => {
                     res.should.have.status(400)
-                    res.body.should.have.property('error').equal('CPF is invalid!');
+                    res.body.should.have.property('error').equal('CPF inválido.');
                     done();
                 });
         });
@@ -83,7 +83,7 @@ describe('API cpf-cnpj-management tests', function() {
                 .set('Content-Type', 'application/json')
                 .end((err, res) => {
                     res.should.have.status(400)
-                    res.body.should.have.property('error').equal('CNPJ is invalid!');
+                    res.body.should.have.property('error').equal('CNPJ inválido.');
                     done();
                 });
         });
@@ -97,7 +97,7 @@ describe('API cpf-cnpj-management tests', function() {
                 .end((err, res) => {
                     res.should.have.status(200);
                     res.body.should.have.property('users');
-                    res.body.should.have.property('message').equal('Success');
+                    res.body.should.have.property('message').equal('Sucesso.');
                     done();
                 });
 
@@ -199,7 +199,7 @@ describe('API cpf-cnpj-management tests', function() {
                     .set('Content-Type', 'application/json')
                     .end((err, res) => {
                         res.should.have.status(400)
-                        res.body.should.have.property('error').equal('CPF is invalid!');
+                        res.body.should.have.property('error').equal('CPF inválido.');
                         done();
                     });
             });
@@ -215,7 +215,7 @@ describe('API cpf-cnpj-management tests', function() {
                     .set('Content-Type', 'application/json')
                     .end((err, res) => {
                         res.should.have.status(400)
-                        res.body.should.have.property('error').equal('CNPJ is invalid!');
+                        res.body.should.have.property('error').equal('CNPJ inválido.');
                         done();
                     });
             });
@@ -232,7 +232,7 @@ describe('API cpf-cnpj-management tests', function() {
                     .set('Content-Type', 'application/json')
                     .end((err, res) => {
                         res.should.have.status(200);
-                        res.body.should.have.property('message').equal('User deleted');
+                        res.body.should.have.property('message').equal('Usuário removido com sucesso.');
                         done();
                     });
             });
@@ -247,7 +247,7 @@ describe('API cpf-cnpj-management tests', function() {
                     .set('Content-Type', 'application/json')
                     .end((err, res) => {
                         res.should.have.status(200);
-                        res.body.should.have.property('message').equal('User deleted');
+                        res.body.should.have.property('message').equal('Usuário removido com sucesso.');
                         done();
                     });
             });

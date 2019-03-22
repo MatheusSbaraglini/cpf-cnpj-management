@@ -25,7 +25,7 @@ export default {
     props: ["errorMessage", "visible"],
     methods: {
         hideModal() {
-            console.log('fechando tela erro');
+            // console.log('fechando tela erro');
             this.$refs.errorModalMessage.hide();
             this.$emit('onCloseErrorModalMessage');
         }

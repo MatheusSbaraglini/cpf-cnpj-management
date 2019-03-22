@@ -5,7 +5,7 @@ var mongoUrl = process.env.MONGO_URL;
 
 mongoUrl += '/' + databaseName;
 
-console.log('database url: ' + mongoUrl);
+// console.log('database url: ' + mongoUrl);
 
 mongoose.connect(mongoUrl, {
     useNewUrlParser: true,

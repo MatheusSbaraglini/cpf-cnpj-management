@@ -1,5 +1,50 @@
 <template>
     <div class="User" v-if="show">
+        <div class="alert-div">
+            <b-alert
+                variant="success"
+                fade
+                dismissible
+                :show="dismissSuccessCountDown"
+                @dismiss-count-down="countDownSuccessChange"
+                @dismissed="dismissSuccessCountDown=0"
+            >
+                <strong> {{ alertMessage }} </strong>
+            </b-alert>
+
+            <b-alert
+                variant="danger"
+                fade
+                :show="dismissErrorCountDown"
+                @dismiss-count-down="countDownErrorChange"
+                @dismissed="dismissErrorCountDown=0"
+            >
+                <strong> {{ alertMessage }} </strong>
+            </b-alert>
+        </div>
+
+        <div class="search-div">
+            <b-form-group
+                label-cols-sm="2"
+                label="Filtro"
+                class="mb-0"
+                label-align-sm="right"
+            >
+                <b-input-group>
+                    <b-form-input
+                        v-model="filter"
+                        placeholder="Digite sua pesquisa"
+                    />
+                    <b-input-group-append>
+                        <b-button :disabled="!filter" @click="filter = ''"
+                        >
+                            Limpar
+                        </b-button>
+                    </b-input-group-append>
+                </b-input-group>
+            </b-form-group>
+        </div>
+
         <div class="create-div">
             <b-button variant="primary" @click="onShowCreateUpdateUser">Criar novo usuário</b-button>
 
@@ -15,8 +60,6 @@
             </div>
         </div>
 
-        <p></p>
-
         <b-table
             striped
             hover
@@ -24,6 +67,7 @@
             :sort-desc.sync="sortDesc"
             :items="users"
             :fields="fields"
+            :filter="filter"
         >
             <template slot="cpf" slot-scope="row">
                 {{ applyCpfMask(row.value) }}
@@ -67,6 +111,10 @@ export default {
             createUpdateUserTitle: 'Criar novo usuário.',
             sortBy: 'name',
             sortDesc: false,
+            filter: '',
+            alertMessage: '',
+            dismissSuccessCountDown: 0,
+            dismissErrorCountDown: 0,
             fields: [
                 {key: 'name', sortable: true, label: 'Nome'},
                 {key: 'cpf', sortable: true, label: 'CPF'},
@@ -96,15 +144,16 @@ export default {
 
         onCreateNewUser(userData) {
             this.users.push(userData);
-            // TO-DO: notificar usuário da criação bem sucedida
+            this.showSuccessAlert('Usuário foi criado com sucesso!');
         },
 
         onUserIsEdited() {
             axios.get('http://localhost:3000/api/v1/users')
-                .then(res => { this.users = res.data.users })
+                .then(function(response) {
+                    this.users = response.data.users;
+                    this.showSuccessAlert('Usuário foi alterado com sucesso!');
+                }.bind(this))
                 .catch(err => { throw new Error(err) });
-            
-            // TO-DO: notificar usuário da edição bem sucedida
         },
 
         onEditUserClick(userData) {
@@ -127,8 +176,13 @@ export default {
 
         onDeleteUserClick(userId) {
             axios.delete(`http://localhost:3000/api/v1/users/${userId}`)
-                .then(this.users = this.users.filter(user => user._id !== userId))
-                .catch(err => { throw new Error(err) })
+                .then(function() {
+                    this.users = this.users.filter(user => user._id !== userId);
+                    this.showSuccessAlert('Usuário foi removido com sucesso!');
+                }.bind(this))
+                .catch(function() {
+                    this.showErrorAlert('Houve uma falha ao remover o usuário');
+                }.bind(this))
         },
 
         onModifyActiveClick(userData) {
@@ -141,12 +195,34 @@ export default {
                 headers: { 'Content-Type': 'application/json' }
             })
                 .then(function(response) {
-                    console.log('active alter to: ' + response.data.user.active)
+                    // console.log('active alter to: ' + response.data.user.active);
                     userData.active = response.data.user.active;
-                })
-                .catch(function(error){
-                    console.log('erro altering active: ' + error.response.data.error)
-                })
+                    const activeOrDeactive = userData.active ? 'ativado' : 'desativado';
+                    this.showSuccessAlert(`Usuário foi ${activeOrDeactive} com sucesso!`);
+                }.bind(this))
+                .catch(function(){
+                    // console.log('erro altering active: ' + userData.active);
+                    const activeOrDeactive = userData.active ? 'desativar' : 'ativar';
+                    this.showErrorAlert(`Houve uma falha ao ${activeOrDeactive} o usuário!`);
+                }.bind(this))
+        },
+
+        showSuccessAlert(message) {
+            this.alertMessage = message;
+            this.dismissSuccessCountDown = 2;
+        },
+
+        showErrorAlert(message) {
+            this.alertMessage = message;
+            this.dismissErrorCountDown = 2;
+        },
+
+        countDownSuccessChange(dismissCountDown) {
+            this.dismissSuccessCountDown = dismissCountDown
+        },
+
+        countDownErrorChange(dismissCountDown) {
+            this.dismissErrorCountDown = dismissCountDown;
         },
 
         applyCpfMask(value) {
@@ -160,7 +236,9 @@ export default {
     created() {
       axios.get('http://localhost:3000/api/v1/users')
         .then(res => { this.users = res.data.users })
-        .catch(err => { throw new Error(err) });
+        .catch(function() {
+            this.showErrorAlert('Houve uma falha ao carregar todos usuários!');
+        }.bind(this));
   }
 }
 </script>
@@ -174,9 +252,25 @@ export default {
     }
 
     .create-div {
-        text-align: right;
-        margin-right: 5%;
-        
+        float: right;
+        margin-right: 1%;
+        margin-bottom: 1%;
+    }
+
+    .search-div {
+        float: left;
+        margin-right: 10px;
+        margin-bottom: 1%;
+    }
+
+    .parent-div {
+        float: right;
+        clear: none; 
+    }
+
+    .alert-div {
+        width: 40%;
+        margin: auto;
     }
 
 </style>

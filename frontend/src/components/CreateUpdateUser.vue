@@ -21,7 +21,7 @@
                         :state="nameValidation"
                     />
                     <b-form-invalid-feedback :state="nameValidation">
-                        Deve conter ao menos uma letra.
+                        Nome deve conter ao menos uma letra.
                     </b-form-invalid-feedback>
                 </div>
 
@@ -34,7 +34,7 @@
                         :state="cpfCnpjValidation"
                     />
                     <b-form-invalid-feedback :state="cpfCnpjValidation">
-                        Deve possuir 11 caracteres para CPF ou 14 caracteres para CNPJ
+                        Deve possuir 11 caracteres para CPF ou 14 caracteres para CNPJ.
                     </b-form-invalid-feedback>
                 </div>
 
@@ -101,9 +101,9 @@ export default {
                 cpf: this.userData.cpf,
                 cnpj: this.userData.cnpj
             };
-            console.log('name: ' + data.name);
-            console.log('cpf: ' + data.cpf);
-            console.log('cnpj: ' + data.cnpj);
+            // console.log('name: ' + data.name);
+            // console.log('cpf: ' + data.cpf);
+            // console.log('cnpj: ' + data.cnpj);
 
             axios({
                 method: 'put',
@@ -111,8 +111,8 @@ export default {
                 data: data,
                 headers: { 'Content-Type': 'application/json'}
             })
-                .then(function(response) {
-                    console.log('put ok: ' + response.data.user.name);
+                .then(function() {
+                    // console.log('put ok: ' + response.data.user.name);
                     this.$emit('userIsEdited');
                     this.hideModal();
                 }.bind(this))
@@ -135,7 +135,7 @@ export default {
                 headers: { 'Content-Type': 'application/json'}
             })
                 .then(function(response) {
-                    console.log('post ok: ' + response.data.user.name);
+                    // console.log('post ok: ' + response.data.user.name);
                     this.$emit('createNewUser', response.data.user);
                     this.hideModal();
                 }.bind(this))
@@ -163,12 +163,12 @@ export default {
             this.userData.cnpj = undefined;
 
             if (!this.userData.name.length > 0) {
-                this.showError('Enter at least 1 letter.');
+                this.showError('Nome deve conter ao menos uma letra.');
                 return;
             }
 
             if (this.cpfCnpj.length !== 11 && this.cpfCnpj.length !== 14) {
-                this.showError('Must be 11 characters long for cpf or 14 characters long for cnpj.');
+                this.showError('Deve possuir 11 caracteres para CPF ou 14 caracteres para CNPJ.');
                 return;
             }
 
