@@ -1,6 +1,6 @@
 FROM node:alpine
 
-WORKDIR /home/app
+WORKDIR /home/cpf-cnpj-management/app/test/backend
 
 ENV NODE_ENV test
 

@@ -9,25 +9,43 @@ const should = chai.should();
 
 chai.use(chaiHttp);
 
-var newValidPerson = {
+var newInvalidUserWithNoCpfCnpj = {
+    name: 'Matheus'
+};
+
+// cpf users data
+var newValidCpfUser = {
     name: 'Matheus Sbaraglini',
     cpf: '12517907048'
 };
 
-var newInvalidPerson = {
+var newInvalidCpfUser = {
     name: 'Matheus Sbaraglini',
     cpf: '12312312300'
 };
 
-var newValidCorporation = {
+var newInvalidSameCpfUser = {
+    name: 'Matheus Sbaraglini',
+    cpf: '00000000000'
+};
+
+
+// cnpj users data
+var newValidCnpjUser = {
     name: 'Matheus ltda.',
     cnpj: '07522880000105'
 };
 
-var newInvalidCorporation = {
+var newInvalidCnpjUser = {
     name: 'Matheus ltda.',
     cnpj: '12312312312300'
 };
+
+var newInvalidSameCnpjUser = {
+    name: 'Matheus ltda.',
+    cnpj: '00000000000000'
+};
+
 
 describe('API cpf-cnpj-management tests', function() {
 
@@ -35,11 +53,12 @@ describe('API cpf-cnpj-management tests', function() {
         await User.deleteOne({});
     });
 
-    describe('/POST users tests', () => {
-        it('it should POST a new person user', (done) => {
+    // POST method tests
+    describe('POST users tests', () => {
+        it('it should POST a new cpf user', (done) => {
             chai.request(server)
                 .post('/api/v1/users')
-                .send(newValidPerson)
+                .send(newValidCpfUser)
                 .set('Content-Type', 'application/json')
                 .end((err, res) => {
                     res.should.have.status(201);
@@ -50,10 +69,10 @@ describe('API cpf-cnpj-management tests', function() {
                 });
         });
 
-        it('it should POST a new corporation user', (done) => {
+        it('it should POST a new cnpj user', (done) => {
             chai.request(server)
                 .post('/api/v1/users')
-                .send(newValidCorporation)
+                .send(newValidCnpjUser)
                 .set('Content-Type', 'application/json')
                 .end((err, res) => {
                     res.should.have.status(201);
@@ -67,7 +86,7 @@ describe('API cpf-cnpj-management tests', function() {
         it('it should fail the POST because cpf is invalid', (done) => {
             chai.request(server)
                 .post('/api/v1/users')
-                .send(newInvalidPerson)
+                .send(newInvalidCpfUser)
                 .set('Content-Type', 'application/json')
                 .end((err, res) => {
                     res.should.have.status(400)
@@ -76,10 +95,22 @@ describe('API cpf-cnpj-management tests', function() {
                 });
         });
 
+        it('it should fail the POST because cpf is invalid with same numbers', (done) => {
+            chai.request(server)
+                .post('/api/v1/users')
+                .send(newInvalidSameCpfUser)
+                .set('Content-Type', 'application/json')
+                .end((err, res) => {
+                    res.should.have.status(400)
+                    res.body.should.have.property('error').equal('CPF inválido.');
+                    done();
+                });
+        })
+
         it('it should fail the POST because cnpj is invalid', (done) => {
             chai.request(server)
                 .post('/api/v1/users')
-                .send(newInvalidCorporation)
+                .send(newInvalidCnpjUser)
                 .set('Content-Type', 'application/json')
                 .end((err, res) => {
                     res.should.have.status(400)
@@ -87,9 +118,34 @@ describe('API cpf-cnpj-management tests', function() {
                     done();
                 });
         });
+
+        it('it should fail the POST because cnpj is invalid with same numbers', (done) => {
+            chai.request(server)
+                .post('/api/v1/users')
+                .send(newInvalidSameCnpjUser)
+                .set('Content-Type', 'application/json')
+                .end((err, res) => {
+                    res.should.have.status(400)
+                    res.body.should.have.property('error').equal('CNPJ inválido.');
+                    done();
+                });
+        });
+
+        it('it should fail the POST because neither cpf nor cnpj is declared', (done) => {
+            chai.request(server)
+                .post('/api/v1/users')
+                .send(newInvalidUserWithNoCpfCnpj)
+                .set('Content-Type', 'application/json')
+                .end((err, res) => {
+                    res.should.have.status(400)
+                    res.body.should.have.property('error').equal('É necessário informar um CPF ou CNPJ');
+                    done();
+                });
+        });
     });
 
-    describe('/GET users tests', () => {
+    // GET method tests
+    describe('GET users tests', () => {
         it('it should GET all users', (done) => {
             chai.request(server)
                 .get('/api/v1/users')
@@ -103,8 +159,8 @@ describe('API cpf-cnpj-management tests', function() {
 
         });
 
-        it('it should GET a person user', (done) => {
-            let newUser = new User(newValidPerson);
+        it('it should GET a cpf user', (done) => {
+            let newUser = new User(newValidCpfUser);
 
             newUser.save((err, user) => {
                 chai.request(server)
@@ -121,8 +177,8 @@ describe('API cpf-cnpj-management tests', function() {
             });
         });
 
-        it('it should GET a corporation user', (done) => {
-            let newUser = new User(newValidCorporation);
+        it('it should GET a cnpj user', (done) => {
+            let newUser = new User(newValidCnpjUser);
 
             newUser.save((err, user) => {
                 chai.request(server)
@@ -140,9 +196,10 @@ describe('API cpf-cnpj-management tests', function() {
         });
     });
 
-    describe('/PUT users tests', () => {
-        it('it should UPDATE a person user', (done) => {
-            let newUser = new User(newValidPerson);
+    // PUT method tests
+    describe('PUT users tests', () => {
+        it('it should UPDATE a cpf user', (done) => {
+            let newUser = new User(newValidCpfUser);
 
             const updatedUser = {
                 name: 'Other name',
@@ -165,8 +222,8 @@ describe('API cpf-cnpj-management tests', function() {
             });
         });
 
-        it('it should UPDATE a corporation user', (done) => {
-            let newUser = new User(newValidCorporation);
+        it('it should UPDATE a cnpj user', (done) => {
+            let newUser = new User(newValidCnpjUser);
 
             const updatedUser = {
                 name: 'Other name ltda.',
@@ -190,12 +247,28 @@ describe('API cpf-cnpj-management tests', function() {
         });
 
         it('it should fail the UPDATE because cpf is invalid', (done) => {
-            let newUser = new User(newValidPerson);
+            let newUser = new User(newValidCpfUser);
 
             newUser.save((err, user) => {
                 chai.request(server)
                     .put('/api/v1/users/' + user.id)
-                    .send(newInvalidPerson)
+                    .send(newInvalidCpfUser)
+                    .set('Content-Type', 'application/json')
+                    .end((err, res) => {
+                        res.should.have.status(400)
+                        res.body.should.have.property('error').equal('CPF inválido.');
+                        done();
+                    });
+            });
+        });
+
+        it('it should fail the UPDATE because cpf is invalid with same numbers', (done) => {
+            let newUser = new User(newValidCpfUser);
+
+            newUser.save((err, user) => {
+                chai.request(server)
+                    .put('/api/v1/users/' + user.id)
+                    .send(newInvalidSameCpfUser)
                     .set('Content-Type', 'application/json')
                     .end((err, res) => {
                         res.should.have.status(400)
@@ -206,12 +279,28 @@ describe('API cpf-cnpj-management tests', function() {
         });
 
         it('it should fail the UPDATE because cnpj is invalid', (done) => {
-            let newUser = new User(newValidCorporation);
+            let newUser = new User(newValidCnpjUser);
 
             newUser.save((err, user) => {
                 chai.request(server)
                     .put('/api/v1/users/' + user.id)
-                    .send(newInvalidCorporation)
+                    .send(newInvalidCnpjUser)
+                    .set('Content-Type', 'application/json')
+                    .end((err, res) => {
+                        res.should.have.status(400)
+                        res.body.should.have.property('error').equal('CNPJ inválido.');
+                        done();
+                    });
+            });
+        });
+
+        it('it should fail the UPDATE because cnpj is invalid with same numbers', (done) => {
+            let newUser = new User(newValidCnpjUser);
+
+            newUser.save((err, user) => {
+                chai.request(server)
+                    .put('/api/v1/users/' + user.id)
+                    .send(newInvalidSameCnpjUser)
                     .set('Content-Type', 'application/json')
                     .end((err, res) => {
                         res.should.have.status(400)
@@ -222,9 +311,53 @@ describe('API cpf-cnpj-management tests', function() {
         });
     });
 
-    describe('/DELETE users tests', () => {
-        it('it should delete a person user', (done) => {
-            let newUser = User(newValidPerson);
+    // PATCH method tests
+    describe('PATCH users tests', () => {
+        it('it should deactive a cpf user with PATCH method', (done) => {
+            let newUser = new User(newValidCpfUser);
+
+            let deactiveUser = { active: false };
+
+            newUser.save((err, user) => {
+                chai.request(server)
+                    .put('/api/v1/users/' + user.id)
+                    .send(deactiveUser)
+                    .set('Content-Type', 'application/json')
+                    .end((err, res) => {
+                        res.should.have.status(200)
+                        res.body.should.have.property('user');
+                        res.body.user.should.have.property('_id').equal(user.id);
+                        res.body.user.should.have.property('active').equal(false);
+                        done();
+                    });
+            });
+        });
+
+        it('it should deactive a cnpj user with PATCH method', (done) => {
+            let newUser = new User(newValidCnpjUser);
+
+            let deactiveUser = { active: false };
+
+            newUser.save((err, user) => {
+                chai.request(server)
+                    .put('/api/v1/users/' + user.id)
+                    .send(deactiveUser)
+                    .set('Content-Type', 'application/json')
+                    .end((err, res) => {
+                        res.should.have.status(200)
+                        res.body.should.have.property('user');
+                        res.body.user.should.have.property('_id').equal(user.id);
+                        res.body.user.should.have.property('active').equal(false);
+                        done();
+                    });
+            });
+        });
+    });
+
+    // DELETE method tests
+    describe('DELETE users tests', () => {
+        it('it should delete a cpf user', (done) => {
+            let newUser = User(newValidCpfUser);
 
             newUser.save((err, user) => {
                 chai.request(server)
@@ -238,8 +371,8 @@ describe('API cpf-cnpj-management tests', function() {
             });
         });
 
-        it('it should delete a corporation user', (done) => {
-            let newUser = User(newValidCorporation);
+        it('it should delete a cnpj user', (done) => {
+            let newUser = User(newValidCnpjUser);
 
             newUser.save((err, user) => {
                 chai.request(server)

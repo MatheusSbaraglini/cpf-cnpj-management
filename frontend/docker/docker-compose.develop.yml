@@ -1,0 +1,11 @@
+# docker-compose -f docker-compose.develop.yml up --build
+version: "3"
+
+services:
+  client:
+    build:
+      context: ../
+      dockerfile: docker/Dockerfile.develop
+    ports:
+      - "8080:8080"
+    restart: always

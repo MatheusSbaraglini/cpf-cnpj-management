@@ -5,7 +5,9 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
+    "lint": "vue-cli-service lint",
+    "buildclient": "docker-compose -f docker/docker-compose.develop.yml build",
+    "start": "docker-compose -f docker/docker-compose.develop.yml up"
   },
   "dependencies": {
     "axios": "^0.18.0",

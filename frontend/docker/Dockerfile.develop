@@ -1,0 +1,12 @@
+FROM node:alpine
+
+WORKDIR /home/cpf-cnpj-management/app/frontend
+
+COPY package*.json ./
+RUN npm install
+
+COPY . .
+
+EXPOSE 8080
+
+CMD ["npm", "run", "serve"]

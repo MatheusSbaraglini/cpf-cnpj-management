@@ -3,9 +3,8 @@ const router = express.Router();
 
 var userController = require('../controllers/userController');
 
-// User routes
 router.route('/users/')
-    .get(userController.index)
+    .get(userController.all)
     .post(userController.new);
 
 router.route('/users/:user_id')
@@ -14,5 +13,4 @@ router.route('/users/:user_id')
     .put(userController.update)
     .delete(userController.delete);
 
-// Export userRoute
 module.exports = router;

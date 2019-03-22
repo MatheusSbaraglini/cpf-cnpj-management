@@ -1,14 +1,8 @@
-// const express = require('express');
-// const Person = require('../models/personModel');
-// const Corporation = require('../models/corporationModel');
-// const userFactory = require('../utils/userFactory');
 const User = require('../models/userModel');
 const { InvalidCpfError, InvalidCnpjError, DomainError } = require('../errors');
 const validateCpfCnpj = require('../utils/userHelper').validateCpfCnpj;
 
-// const router = express.Router();
-
-module.exports.index = async function (req, res) {
+module.exports.all = async function (req, res) {
     try {
         const users = await User.find();
 
@@ -34,7 +28,7 @@ module.exports.view = async function (req, res) {
         });
     } catch (err) {
         // console.error(err);
-        return res.send(400).send({ error: 'Falha ao carregar usuário.' + err })
+        return res.send(400).send({ error: 'Falha ao carregar usuário.' })
     }
 };
 
@@ -87,6 +81,7 @@ module.exports.update = async function (req, res) {
 
         validateCpfCnpj(user.cpf, user.cnpj);
 
+        // as active is boolean type i'm testing if it exists
         if (typeof active !== 'undefined' && active !== null) {
             user.active = active
         };
